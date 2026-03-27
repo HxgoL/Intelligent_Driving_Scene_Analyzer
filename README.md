@@ -66,6 +66,3 @@ Le projet est réalisé en équipe avec une répartition des rôles :
 - Données : préparation, nettoyage et évaluation
 - Agent LLM : analyse intelligente et génération du rapport
 - Intégration : développement de l’interface et connexion des modules
-```bash
-git clone <repo_url>
-cd projet-ia-conduite

@@ -1,7 +1,6 @@
 from cv_module.model_utils import load_model
 from pipeline.schema import BoundingBox, DetectedObject, SceneDetections
 
-
 # Cette méthode exécute YOLO sur une image et retourne les détections dans le schéma commun du pipeline.
 
 def run_inference(image_path: str) -> SceneDetections:

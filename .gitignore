@@ -1,3 +1,12 @@
-#Environnement virtuel
-
+# Environnement virtuel
 .venv/
+
+# Cache Python
+__pycache__/
+*.pyc
+
+# Fichiers système
+.DS_Store
+
+# Modèles téléchargés
+yolov8n.pt

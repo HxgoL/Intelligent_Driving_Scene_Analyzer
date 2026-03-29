@@ -133,28 +133,3 @@ Analysez brièvement les risques et proposez des recommandations."""
        return prompt
 
 
-   @staticmethod
-   def build_json_prompt(detections: SceneDetections) -> str:
-       """
-       Construit un prompt JSON pour communication structurée.
-       Utile pour les LLMs qui comprennent JSON.
-       """
-       detections_dict = {
-           "scene": {
-               "nombre_objets": len(detections.detected_objects),
-               "objets": [
-                   {
-                       "label": obj.label,
-                       "confidence": obj.confidence,
-                       "bbox": {
-                           "x": obj.bounding_box.x,
-                           "y": obj.bounding_box.y,
-                           "width": obj.bounding_box.width,
-                           "height": obj.bounding_box.height,
-                       }
-                   }
-                   for obj in detections.detected_objects
-               ]
-           }
-       }
-       return json.dumps(detections_dict, ensure_ascii=False, indent=2)

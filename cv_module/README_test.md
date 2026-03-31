@@ -31,9 +31,15 @@ Exemple :
 
 ## Lancement des tests
 
-Depuis la racine du projet, avec l'environnement virtuel activé :
+Depuis la racine du projet :
 
+```bash
+source .venv/bin/activate
 ```
+
+Puis lancer le test d'inférence :
+
+```bash
 python3 -m cv_module.test_infer
 ```
 
@@ -53,3 +59,31 @@ Ce test permet de vérifier que :
 - les détections ne sont pas encore filtrées
 - les classes non pertinentes pour le projet peuvent encore apparaître
 - l'amélioration de la précision et le post-traitement seront traités dans les prochaines issues
+
+## Entraînement de deux variantes du modèle
+
+L'issue suivante ajoute un script [train.py](/home/eve/GitHub/Intelligent_Driving_Scene_Analyzer/cv_module/train.py) pour lancer l'entraînement de plusieurs variantes YOLOv8 sur un dataset au format Ultralytics.
+
+Depuis la racine du projet, activer d'abord l'environnement virtuel :
+
+```bash
+source .venv/bin/activate
+```
+
+Exemple pour comparer `yolov8n` et `yolov8s` :
+
+```bash
+python3 -m cv_module.train \
+  --data path/to/dataset.yaml \
+  --models yolov8n yolov8s \
+  --epochs 50 \
+  --imgsz 640 \
+  --batch 16
+```
+
+Le script :
+
+- charge chaque variante à partir des poids pré-entraînés Ultralytics
+- lance l'entraînement avec des paramètres simples
+- sauvegarde les poids `best.pt` et `last.pt`
+- affiche les métriques finales principales (`precision`, `recall`, `mAP50`, `mAP50-95`)

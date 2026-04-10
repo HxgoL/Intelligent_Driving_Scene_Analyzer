@@ -10,3 +10,6 @@ __pycache__/
 
 # Modèles téléchargés
 yolov8n.pt
+
+# Donnees brutes locales
+data/raw/

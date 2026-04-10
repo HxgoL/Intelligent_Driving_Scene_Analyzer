@@ -16,6 +16,7 @@ class ResponseFormatter:
    RISQUES_PATTERN = r"(?:RISQUES|MENACES)\s*:\s*(.+?)(?=RECOMMANDATIONS|$)"
    RECOMMANDATIONS_PATTERN = r"RECOMMANDATIONS?\s*:\s*(.+?)$"
 
+    # Méthodes d'extraction pour chaque section
    @staticmethod
    def extract_resume(text: str) -> str:
        """Extrait le résumé du texte de réponse"""
@@ -28,6 +29,7 @@ class ResponseFormatter:
            return resume
        return "Analyse non disponible"
 
+    # Méthodes d'extraction pour les risques
    @staticmethod
    def extract_risks(text: str) -> List[str]:
        """Extrait la liste des risques du texte"""
@@ -41,6 +43,7 @@ class ResponseFormatter:
            return risks[:5]  # Limite à 5 risques
        return []
 
+    # Méthode d'extraction pour les recommandations
    @staticmethod
    def extract_recommendations(text: str) -> List[str]:
        """Extrait les recommandations du texte"""
@@ -54,6 +57,7 @@ class ResponseFormatter:
            return recommendations[:5]  # Limite à 5 recommandations
        return []
 
+    # Méthode pour inférer le niveau de risque à partir du texte
    @staticmethod
    def infer_risk_level(text: str, risk_score: float = 50) -> str:
        """Infère le niveau de risque basé sur le contenu du texte"""
@@ -70,11 +74,12 @@ class ResponseFormatter:
        else:
            return "FAIBLE"
 
+    # Méthode principale pour formater la réponse du LLM en AnalyseResultat
    @classmethod
    def format_llm_response(
        cls,
        llm_response: str,
-       risk_score: Optional[float] = None
+       risk_score: Optional[float] = None 
    ) -> AnalyseResultat:
        """
        Formate la réponse brute du LLM en objet AnalyseResultat structuré.
@@ -87,9 +92,9 @@ class ResponseFormatter:
            AnalyseResultat structuré et prêt à utiliser
        """
        # Extrait les composants
-       resume = cls.extract_resume(llm_response)
-       risks = cls.extract_risks(llm_response)
-       recommendations = cls.extract_recommendations(llm_response)
+       resume = cls.extract_resume(llm_response) 
+       risks = cls.extract_risks(llm_response) 
+       recommendations = cls.extract_recommendations(llm_response) 
 
 
        # Infère le niveau de risque
@@ -103,6 +108,7 @@ class ResponseFormatter:
            risque_eval=RisqueEvaluation(risque_level=risk_level)
        )
 
+    # Méthode de secours pour formater les résultats sans LLM (ex: tests unitaires)
    @staticmethod
    def fallback_format(
        resume: str,
@@ -120,6 +126,7 @@ class ResponseFormatter:
            risque_eval=RisqueEvaluation(risque_level=risk_level)
        )
 
+    # Méthode pour formater le résultat pour affichage (ex: Streamlit)
    @staticmethod
    def format_for_display(result: AnalyseResultat) -> Dict:
        """Formate le résultat pour affichage lisible (ex: Streamlit)"""
@@ -128,3 +135,4 @@ class ResponseFormatter:
            "niveau_risque": result.risque_eval.risque_level,
            "recommandations": result.recommandations,
        }
+   

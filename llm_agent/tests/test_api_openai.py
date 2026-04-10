@@ -4,19 +4,20 @@ Vérifie que la clé API est configurée et que la connexion fonctionne
 """
 import os
 import pytest
-from dotenv import load_dotenv
 
-# Charger les variables d'env
-load_dotenv()
+# NOTE: Do NOT call load_dotenv() here! It would override test environment
+# conftest.py will handle loading .env in the right context
 
 
 class TestOpenAIConnection:
     """Tests de connexion à l'API OpenAI"""
     
+    @pytest.mark.api
     def test_api_key_exists(self):
         """Vérifier que la clé API est définie"""
         api_key = os.getenv("OPEN_API_KEY")
-        assert api_key is not None, "OPEN_API_KEY non définie dans .env"
+        if not api_key:
+            pytest.skip("API key not configured")
         assert api_key.startswith("sk-"), "Clé API invalide (doit commencer par sk-)"
     
     def test_openai_import(self):
@@ -24,19 +25,27 @@ class TestOpenAIConnection:
         from openai import OpenAI
         assert OpenAI is not None
     
+    @pytest.mark.api
     def test_openai_client_initialization(self):
         """Vérifier que le client OpenAI peut être initialisé"""
-        from openai import OpenAI
         api_key = os.getenv("OPEN_API_KEY")
+        if not api_key:
+            pytest.skip("API key not configured")
+        
+        from openai import OpenAI
         
         client = OpenAI(api_key=api_key)
         assert client is not None
     
+    @pytest.mark.api
     @pytest.mark.slow
     def test_openai_api_call(self):
         """Test d'appel réel à l'API OpenAI"""
-        from openai import OpenAI
         api_key = os.getenv("OPEN_API_KEY")
+        if not api_key:
+            pytest.skip("API key not configured")
+        
+        from openai import OpenAI
         
         client = OpenAI(api_key=api_key)
         

@@ -20,23 +20,27 @@ class TestDrivingSceneAnalyzerInitialization:
         assert analyzer.client is None
         assert analyzer.risk_evaluator is not None
     
+    @pytest.mark.api
     def test_initialization_with_invalid_api_key(self):
         """Tester que l'init échoue avec une clé API invalide"""
+        import os
+        if not os.getenv("OPEN_API_KEY"):
+            pytest.skip("API key not configured")
         with pytest.raises(ValueError):
             DrivingSceneAnalyzer(use_llm=True, api_key="invalid_key")
     
+    @pytest.mark.api
     def test_initialization_with_valid_api_key(self):
         """Tester l'init avec une clé API valide"""
         import os
-        from dotenv import load_dotenv
         
-        load_dotenv()
         api_key = os.getenv("OPEN_API_KEY")
+        if not api_key:
+            pytest.skip("API key not configured")
         
-        if api_key:
-            analyzer = DrivingSceneAnalyzer(use_llm=True, api_key=api_key)
-            assert analyzer.use_llm is True
-            assert analyzer.client is not None
+        analyzer = DrivingSceneAnalyzer(use_llm=True, api_key=api_key)
+        assert analyzer.use_llm is True
+        assert analyzer.client is not None
 
 
 class TestDrivingSceneAnalyzerAnalysis:
@@ -82,23 +86,23 @@ class TestDrivingSceneAnalyzerAnalysis:
         assert result.recommandations is not None
         assert len(result.recommandations) >= 0
     
+    @pytest.mark.api
     @pytest.mark.slow
     def test_analysis_with_llm(self):
         """Test d'analyse avec LLM réel"""
         import os
-        from dotenv import load_dotenv
         
-        load_dotenv()
         api_key = os.getenv("OPEN_API_KEY")
+        if not api_key:
+            pytest.skip("API key not configured")
         
-        if api_key:
-            analyzer = DrivingSceneAnalyzer(use_llm=True, api_key=api_key)
-            scene = SimulatedDrivingScenes.pedestrian_crossing()
-            result = analyzer.analyze_scene(detections=scene)
-            
-            assert result is not None
-            assert result.resume is not None
-            assert result.risque_eval.risque_level in ["FAIBLE", "MOYEN", "ÉLEVÉ", "CRITIQUE"]
+        analyzer = DrivingSceneAnalyzer(use_llm=True, api_key=api_key)
+        scene = SimulatedDrivingScenes.pedestrian_crossing()
+        result = analyzer.analyze_scene(detections=scene)
+        
+        assert result is not None
+        assert result.resume is not None
+        assert result.risque_eval.risque_level in ["FAIBLE", "MOYEN", "ÉLEVÉ", "CRITIQUE"]
 
 
 class TestDrivingSceneAnalyzerWithCustomScenes:

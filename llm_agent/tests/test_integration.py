@@ -134,12 +134,13 @@ class TestIntegrationWithLLM:
         load_dotenv()
         return os.getenv("OPEN_API_KEY") is not None
     
+    @pytest.mark.api
     def test_llm_pipeline_pedestrian(self, has_api_key):
         """Test pipeline LLM avec piétons"""
-        if not has_api_key:
+        api_key = os.getenv("OPEN_API_KEY")
+        if not api_key:
             pytest.skip("API key not configured")
         
-        api_key = os.getenv("OPEN_API_KEY")
         analyzer = DrivingSceneAnalyzer(use_llm=True, api_key=api_key)
         scene = SimulatedDrivingScenes.pedestrian_crossing()
         result = analyzer.analyze_scene(detections=scene)
@@ -147,12 +148,13 @@ class TestIntegrationWithLLM:
         assert result is not None
         assert result.resume is not None
     
+    @pytest.mark.api
     def test_llm_pipeline_all_scenes(self, has_api_key):
         """Test pipeline LLM avec toutes les scènes"""
-        if not has_api_key:
+        api_key = os.getenv("OPEN_API_KEY")
+        if not api_key:
             pytest.skip("API key not configured")
         
-        api_key = os.getenv("OPEN_API_KEY")
         analyzer = DrivingSceneAnalyzer(use_llm=True, api_key=api_key)
         scenes = SimulatedDrivingScenes.all_scenes()
         

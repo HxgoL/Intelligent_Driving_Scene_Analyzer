@@ -40,3 +40,5 @@ ultralytics==8.4.30
 opencv-python==4.13.0.92
 matplotlib==3.10.8
 openai==1.52.0
+python-dotenv==1.0.1
+pytest==9.0.3

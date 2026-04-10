@@ -69,7 +69,7 @@ class ResponseFormatter:
            return "CRITIQUE"
        elif any(word in text_lower for word in ["élevé", "urgent", "réduisez vitesse", "attention"]):
            return "ÉLEVÉ"
-       elif any(word in text_lower for word in ["moyen", "vigilant", "prudence", "attention"]):
+       elif any(word in text_lower for word in ["moyen", "vigilant", "vigilance", "vigilance requise", "prudence"]):
            return "MOYEN"
        else:
            return "FAIBLE"

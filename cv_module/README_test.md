@@ -128,3 +128,21 @@ Pourquoi :
 - son recall est plus élevé, donc il détecte plus d'objets pertinents sur le jeu de validation
 
 Même si la précision brute de `yolov8n` est plus haute, `yolov8s` donne de meilleurs résultats globaux pour notre scénario de conduite urbaine.
+
+## Post-traitement des détections
+
+L'inférence a ensuite été améliorée pour rendre les sorties plus cohérentes pour le projet.
+
+Ce qui a été ajouté dans [infer.py](/home/eve/GitHub/Intelligent_Driving_Scene_Analyzer/cv_module/infer.py) :
+
+- un seuil de confiance pour ignorer les détections peu fiables
+- un regroupement de certaines classes YOLO, par exemple `bus` vers `truck` et `stop sign` vers `traffic sign`
+- un filtrage pour garder surtout les classes utiles au scénario de conduite
+- une position relative simple pour chaque objet, par exemple `left-near`, `center-mid` ou `right-far`
+
+La sortie finale d'un objet détecté contient maintenant :
+
+- `label`
+- `confidence`
+- `bounding_box`
+- `relative_position`

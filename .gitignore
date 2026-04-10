@@ -18,3 +18,5 @@ yolov8n.pt
 
 # Donnees brutes locales
 data/raw/
+yolov8n.pt
+yolov8s.pt

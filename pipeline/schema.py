@@ -25,6 +25,7 @@ class DetectedObject:
     label: str
     confidence: float
     bounding_box: BoundingBox
+    relative_position: Optional[str] = None
 
 #Objet qui represente la sortie brute du cv
 @dataclass

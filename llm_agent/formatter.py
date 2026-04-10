@@ -65,7 +65,9 @@ class ResponseFormatter:
 
 
        # Cherche les mots clés indiquant le niveau de risque
-       if any(word in text_lower for word in ["critique", "immédiat", "danger", "🚨"]):
+       if any(word in text_lower for word in ["aucun risque", "route claire", "conditions normales"]):
+           return "FAIBLE"
+       elif any(word in text_lower for word in ["critique", "immédiat", "danger", "🚨"]):
            return "CRITIQUE"
        elif any(word in text_lower for word in ["élevé", "urgent", "réduisez vitesse", "attention"]):
            return "ÉLEVÉ"

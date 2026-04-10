@@ -6,8 +6,8 @@ Teste le programme avec différentes scènes et montre les résultats
 import sys
 from pathlib import Path
 
-# Ajoute le parent du dossier llm_agent au chemin d'import
-sys.path.insert(0, str(Path(__file__).parent.parent))
+# Ajoute la racine du projet au chemin d'import
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 from pipeline.schema import BoundingBox, DetectedObject, SceneDetections
 from llm_agent import DrivingSceneAnalyzer, SceneAnalysisTools

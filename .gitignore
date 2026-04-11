@@ -10,3 +10,13 @@ __pycache__/
 
 # Modèles téléchargés
 yolov8n.pt
+
+# Variables d'environnement
+.env
+.env.local
+.env.*.local
+
+# Donnees brutes locales
+data/raw/
+yolov8n.pt
+yolov8s.pt

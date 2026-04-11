@@ -3,7 +3,11 @@ agent.py - Orchestrateur principal de l'agent LLM.
 Coordonne l'évaluation des risques, la construction de prompts et le formatage des réponses.
 """
 
+import os
+import logging
 from typing import Optional, Dict
+
+# Importations des schémas de données et des modules internes
 from pipeline.schema import (
    SceneDetections,
    AnalyseResultat,
@@ -15,9 +19,23 @@ from pipeline.schema import (
 from llm_agent.risk_rules import RiskEvaluator, RiskLevel
 from llm_agent.prompt_builder import PromptBuilder
 from llm_agent.formatter import ResponseFormatter
+from llm_agent.tools import SceneAnalysisTools
+
+# Importation du client OpenAI
+try:
+    from openai import OpenAI
+    OPENAI_AVAILABLE = True
+except ImportError:
+    OPENAI_AVAILABLE = False
+    logging.warning("openai package not installed. Install with: pip install openai")
+
+# Configure les logs
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
-class DrivingSceneAnalyzer:
+#Classe principale de l'agent d'analyse de scènes routières
+class DrivingSceneAnalyzer: 
    """
    Agent d'analyse de scènes routières.
   
@@ -25,16 +43,38 @@ class DrivingSceneAnalyzer:
    une analyse complète (AnalyseResultat) avec évaluation des risques.
    """
 
-   def __init__(self, use_llm: bool = False):
+   def __init__(self, use_llm: bool = False, api_key: Optional[str] = None):
        """
        Initialise l'analyseur.
       
        Args:
            use_llm: Si False, utilise une analyse basée sur des règles uniquement.
-                   Si True, utilisera un vrai LLM (à implémenter).
+                   Si True, utalisera l'API OpenAI.
+           api_key: Clé API OpenAI. Si None, utilise OPENAI_API_KEY depuis l'environnement.
        """
        self.use_llm = use_llm
        self.risk_evaluator = RiskEvaluator()
+       self.client = None
+       self.model = "gpt-4o-mini"  # Modèle utilisé (gpt-4-turbo ou gpt-4o-mini pour économiser)
+       
+       # Initialise le client OpenAI si nécessaire
+       if self.use_llm:
+           if not OPENAI_AVAILABLE:
+               raise ImportError(
+                   "openai est requis pour utiliser le LLM. "
+                   "Installez avec: pip install openai"
+               )
+           
+           # Récupère la clé API
+           api_key = api_key or os.getenv("OPENAI_API_KEY")
+           if not api_key:
+               raise ValueError(
+                   "Clé API OpenAI non trouvée. "
+                   "Configurez OPENAI_API_KEY en variable d'environnement ou passez-la en paramètre."
+               )
+           
+           self.client = OpenAI(api_key=api_key)
+           logger.info(f"Client OpenAI initialisé avec le modèle: {self.model}")
 
    def analyze_scene(
        self,
@@ -131,17 +171,48 @@ RECOMMANDATIONS: {chr(10).join(['- ' + r for r in risk_score.primary_risks[:3]])
 
    def _call_llm(self, prompt: str) -> str:
        """
-       Appelle le LLM (à implémenter avec l'API réelle).
+       Appelle l'API OpenAI avec le prompt.
       
        Args:
            prompt: Le prompt pour le LLM
           
        Returns:
            La réponse du LLM
+           
+       Raises:
+           RuntimeError: Si le client n'est pas initialisé
        """
-       # TODO: Intégrer l'API du LLM
-       # Pour l'instant, retourne une réponse par défaut
-       raise NotImplementedError(
-           "Intégration LLM à implémenter. "
-           "Actuellement, utilisez use_llm=False ou mock_llm_response."
-       )
+       if not self.client:
+           raise RuntimeError(
+               "Client OpenAI non initialisé. "
+               "Initialisez l'agent avec use_llm=True et une clé API valide."
+           )
+       
+       try:
+           logger.info(f"Appel API OpenAI avec le modèle {self.model}...")
+           
+           response = self.client.chat.completions.create(
+               model=self.model,
+               messages=[
+                   {
+                       "role": "system",
+                       "content": PromptBuilder.SYSTEM_PROMPT
+                   },
+                   {
+                       "role": "user",
+                       "content": prompt
+                   }
+               ],
+               temperature=0.7,
+               max_tokens=500,
+               top_p=0.9
+           )
+           
+           llm_response = response.choices[0].message.content
+           logger.info("Réponse LLM reçue avec succès")
+           
+           return llm_response
+           
+       except Exception as e:
+           logger.error(f"Erreur lors de l'appel API OpenAI: {str(e)}")
+           raise RuntimeError(f"Erreur OpenAI: {str(e)}") from e

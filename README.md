@@ -1,5 +1,4 @@
 # Analyseur Intelligent de Scènes de Conduite
-
 ## Description du projet
 
 Ce projet s’inscrit dans le cadre d’un module d’Intelligence Artificielle.  

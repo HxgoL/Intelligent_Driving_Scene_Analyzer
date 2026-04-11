@@ -129,11 +129,14 @@ class RiskEvaluator:
        total_risk_score = 0
        detected_hazards = []
        hazard_details = []
+       pedestrian_count = 0
 
 
        for obj in detections.detected_objects:
            # Récupère le facteur de risque de base
            base_factor = cls.get_hazard_factor(obj.label)
+           if "person" in obj.label.lower():
+               pedestrian_count += 1
 
 
            # Calcule les pondérations
@@ -165,6 +168,12 @@ class RiskEvaluator:
            avg_risk_score = total_risk_score / len(detected_hazards)
        else:
            avg_risk_score = total_risk_score
+
+       # Plusieurs piétons dans la scène augmentent fortement le risque, surtout pour une zone scolaire.
+       if pedestrian_count >= 3:
+           avg_risk_score += 18
+       elif pedestrian_count == 2:
+           avg_risk_score += 10
 
 
        # Détermine le niveau de risque

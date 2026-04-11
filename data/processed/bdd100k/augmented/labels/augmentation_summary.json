@@ -1,0 +1,13 @@
+{
+  "original_images_kept": 140,
+  "augmented_images_created": 420,
+  "missing_source_images": 0,
+  "augmentation_darker": 140,
+  "augmentation_higher_contrast": 140,
+  "augmentation_slight_blur": 140,
+  "source_annotations": 140,
+  "output_annotations": 560,
+  "source_annotations_path": "/Users/doha/Desktop/Projet IA/Intelligent_Driving_Scene_Analyzer/data/processed/bdd100k/labels/train_urban_intersection.json",
+  "output_annotations_path": "/Users/doha/Desktop/Projet IA/Intelligent_Driving_Scene_Analyzer/data/processed/bdd100k/augmented/labels/train_urban_intersection_augmented.json",
+  "output_images_dir": "/Users/doha/Desktop/Projet IA/Intelligent_Driving_Scene_Analyzer/data/processed/bdd100k/augmented/images/train_urban_intersection"
+}

@@ -8,8 +8,9 @@ __pycache__/
 # Fichiers système
 .DS_Store
 
-# Modèles téléchargés
+# Modeles telecharges
 yolov8n.pt
+yolov8s.pt
 
 # Variables d'environnement
 .env
@@ -18,5 +19,9 @@ yolov8n.pt
 
 # Donnees brutes locales
 data/raw/
-yolov8n.pt
-yolov8s.pt
+
+# Images augmentees locales
+data/processed/bdd100k/augmented/images/
+
+# Fichiers de packaging generes
+*.egg-info/

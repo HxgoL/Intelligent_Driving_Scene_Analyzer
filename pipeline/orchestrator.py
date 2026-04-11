@@ -1,12 +1,11 @@
 from PIL import Image
 
-from Intelligent_Driving_Scene_Analyzer.pipeline.schema import PipelineOutput
-from Intelligent_Driving_Scene_Analyzer.pipeline.preprocess import preprocess_image
-from Intelligent_Driving_Scene_Analyzer.cv_module.infer import run_inference
-
+from pipeline.schema import PipelineOutput, RisqueEvaluation, AnalyseResultat
+from pipeline.preprocess import preprocess_image
+from cv_module.infer import run_inference
 
 # Test a enlever apres
-from Intelligent_Driving_Scene_Analyzer.pipeline.schema import SceneDetections, DetectedObject, BoundingBox, RisqueEvaluation, AnalyseResultat
+from pipeline.schema import SceneDetections, DetectedObject, BoundingBox
 
 class PipelineOrchestrator:
 

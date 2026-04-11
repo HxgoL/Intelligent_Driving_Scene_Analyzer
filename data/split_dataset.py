@@ -4,8 +4,9 @@ from pathlib import Path
 
 
 ROOT_DIR = Path(__file__).resolve().parents[1]
-FILTERED_ANNOTATIONS_PATH = ROOT_DIR / "data" / "processed" / "bdd100k" / "filtered_annotations.json"
-OUTPUT_DIR = ROOT_DIR / "data" / "processed" / "bdd100k"
+LABELS_DIR = ROOT_DIR / "data" / "processed" / "bdd100k" / "labels"
+FILTERED_ANNOTATIONS_PATH = LABELS_DIR / "filtered_annotations.json"
+OUTPUT_DIR = LABELS_DIR
 
 
 def load_annotations(annotations_path: Path = FILTERED_ANNOTATIONS_PATH) -> list[dict]:

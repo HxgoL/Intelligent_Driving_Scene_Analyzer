@@ -3,18 +3,22 @@ from pipeline.schema import BoundingBox, DetectedObject, SceneDetections
 
 # Cette méthode exécute YOLO sur une image et retourne les détections dans le schéma commun du pipeline.
 
-CONFIDENCE_THRESHOLD = 0.35
+CONFIDENCE_THRESHOLD = 0.40
+CLASS_CONFIDENCE_THRESHOLDS = {
+    "car": 0.45,
+    "truck": 0.45,
+    "person": 0.55,
+    "traffic light": 0.30,
+    "traffic sign": 0.35,
+}
 CLASS_MAPPING = {
     "bus": "truck",
     "stop sign": "traffic sign",
-    "parking meter": "traffic sign",
 }
 ALLOWED_LABELS = {
     "car",
     "truck",
     "person",
-    "bicycle",
-    "motorcycle",
     "traffic light",
     "traffic sign",
 }
@@ -25,6 +29,14 @@ def normalize_label(label: str) -> str | None:
     if normalized_label in ALLOWED_LABELS:
         return normalized_label
     return None
+
+
+def is_box_reliable(label: str, width: float, height: float) -> bool:
+    if width < 12 or height < 12:
+        return False
+    if label in {"car", "truck"} and width < 24:
+        return False
+    return True
 
 
 def get_relative_position(
@@ -45,9 +57,9 @@ def get_relative_position(
     else:
         horizontal_position = "right"
 
-    if center_y > image_height * 0.7:
+    if center_y > image_height * 0.72:
         depth_position = "near"
-    elif center_y > image_height * 0.4:
+    elif center_y > image_height * 0.45:
         depth_position = "mid"
     else:
         depth_position = "far"
@@ -77,17 +89,21 @@ def run_inference(image_path: str, confidence_threshold: float = CONFIDENCE_THRE
             confidence = float(box.conf[0].item())
             x1, y1, x2, y2 = [float(x) for x in box.xyxy[0].tolist()]
             label = normalize_label(names[cls_id])
+            box_width = x2 - x1
+            box_height = y2 - y1
 
-            if confidence < confidence_threshold:
-                continue
             if label is None:
+                continue
+            if confidence < max(confidence_threshold, CLASS_CONFIDENCE_THRESHOLDS.get(label, confidence_threshold)):
+                continue
+            if not is_box_reliable(label, box_width, box_height):
                 continue
 
             bounding_box = BoundingBox(
                 x=x1,
                 y=y1,
-                width=x2 - x1,
-                height=y2 - y1,
+                width=box_width,
+                height=box_height,
             )
             relative_position = get_relative_position(
                 x1=x1,

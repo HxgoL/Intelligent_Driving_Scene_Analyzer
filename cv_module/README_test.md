@@ -146,3 +146,55 @@ La sortie finale d'un objet détecté contient maintenant :
 - `confidence`
 - `bounding_box`
 - `relative_position`
+
+## Dataset final du scénario urbain
+
+Pour le scénario final, l'entraînement peut se faire avec les fichiers préparés par Doha :
+
+- train : `data/processed/bdd100k/augmented/labels/train_urban_intersection_augmented.json`
+- validation : `data/processed/bdd100k/labels/val_urban_intersection.json`
+- test : `data/processed/bdd100k/labels/test_urban_intersection.json`
+
+Si les images augmentées ne sont pas encore présentes localement, on peut les regénérer avec :
+
+```bash
+python3 -m data.augmentation
+```
+
+Puis preparer le dataset YOLO final :
+
+```bash
+python3 -m cv_module.prepare_bdd100k \
+  --train-images-dir data/processed/bdd100k/augmented/images/train_urban_intersection \
+  --val-images-dir data/raw/bdd100k/images \
+  --test-images-dir data/raw/bdd100k/images \
+  --train-annotations data/processed/bdd100k/augmented/labels/train_urban_intersection_augmented.json \
+  --val-annotations data/processed/bdd100k/labels/val_urban_intersection.json \
+  --test-annotations data/processed/bdd100k/labels/test_urban_intersection.json \
+  --output-dir cv_module/bdd100k_yolo
+```
+
+Le script de préparation nettoie maintenant le dossier `cv_module/bdd100k_yolo` avant de le recréer, ce qui évite de mélanger un ancien dataset avec un nouveau split.
+
+Pour réentraîner `yolov8s` :
+
+```bash
+python3 -m cv_module.train --data cv_module/bdd100k_yolo/dataset.yaml --models yolov8s --epochs 5 --imgsz 640 --batch 8
+```
+
+Pour évaluer le modèle final :
+
+```bash
+python3 -m cv_module.evaluate --data cv_module/bdd100k_yolo/dataset.yaml --model yolov8s --split test --imgsz 640 --conf 0.40 --iou 0.60
+```
+
+## Ajustements d'inférence du modèle final
+
+Pour améliorer la précision sur notre scénario urbain, [infer.py](/home/eve/GitHub/Intelligent_Driving_Scene_Analyzer/cv_module/infer.py) applique maintenant :
+
+- un seuil global de confiance à `0.40`
+- des seuils plus précis selon la classe détectée
+- un filtrage de boîtes trop petites pour éviter certaines fausses détections
+- un regroupement limité aux classes cohérentes pour le projet, par exemple `bus` vers `truck` et `stop sign` vers `traffic sign`
+
+Cela permet d'avoir des sorties plus propres dans l'application finale, surtout sur les piétons, les feux et les panneaux.

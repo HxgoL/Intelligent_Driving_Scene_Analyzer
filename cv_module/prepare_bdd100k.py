@@ -13,14 +13,34 @@ def parse_args() -> argparse.Namespace:
         description="Prepare un dataset YOLO a partir des splits BDD100K filtres."
     )
     parser.add_argument(
-        "--images-dir",
+        "--train-images-dir",
         default="data/raw/bdd100k/images",
-        help="Dossier contenant les images BDD100K.",
+        help="Dossier contenant les images du split train.",
     )
     parser.add_argument(
-        "--splits-dir",
-        default="data/processed/bdd100k",
-        help="Dossier contenant train.json, val.json et test.json.",
+        "--val-images-dir",
+        default="data/raw/bdd100k/images",
+        help="Dossier contenant les images du split val.",
+    )
+    parser.add_argument(
+        "--test-images-dir",
+        default="data/raw/bdd100k/images",
+        help="Dossier contenant les images du split test.",
+    )
+    parser.add_argument(
+        "--train-annotations",
+        default="data/processed/bdd100k/labels/train.json",
+        help="Fichier JSON contenant les annotations train.",
+    )
+    parser.add_argument(
+        "--val-annotations",
+        default="data/processed/bdd100k/labels/val.json",
+        help="Fichier JSON contenant les annotations val.",
+    )
+    parser.add_argument(
+        "--test-annotations",
+        default="data/processed/bdd100k/labels/test.json",
+        help="Fichier JSON contenant les annotations test.",
     )
     parser.add_argument(
         "--output-dir",
@@ -60,8 +80,12 @@ def annotation_to_yolo_lines(annotation: dict) -> list[str]:
     return lines
 
 
-def prepare_split(split_name: str, images_dir: Path, splits_dir: Path, output_dir: Path) -> int:
-    annotations_path = splits_dir / f"{split_name}.json"
+def prepare_split(
+    split_name: str,
+    images_dir: Path,
+    annotations_path: Path,
+    output_dir: Path,
+) -> int:
     annotations = json.loads(annotations_path.read_text(encoding="utf-8"))
 
     images_out = output_dir / "images" / split_name
@@ -106,13 +130,20 @@ def write_yaml(output_dir: Path) -> Path:
 
 def main() -> None:
     args = parse_args()
-    images_dir = Path(args.images_dir)
-    splits_dir = Path(args.splits_dir)
     output_dir = Path(args.output_dir)
+    train_images_dir = Path(args.train_images_dir)
+    val_images_dir = Path(args.val_images_dir)
+    test_images_dir = Path(args.test_images_dir)
+    train_annotations = Path(args.train_annotations)
+    val_annotations = Path(args.val_annotations)
+    test_annotations = Path(args.test_annotations)
 
-    train_count = prepare_split("train", images_dir, splits_dir, output_dir)
-    val_count = prepare_split("val", images_dir, splits_dir, output_dir)
-    test_count = prepare_split("test", images_dir, splits_dir, output_dir)
+    if output_dir.exists():
+        shutil.rmtree(output_dir)
+
+    train_count = prepare_split("train", train_images_dir, train_annotations, output_dir)
+    val_count = prepare_split("val", val_images_dir, val_annotations, output_dir)
+    test_count = prepare_split("test", test_images_dir, test_annotations, output_dir)
     yaml_path = write_yaml(output_dir)
 
     print(f"Train prepare : {train_count}")

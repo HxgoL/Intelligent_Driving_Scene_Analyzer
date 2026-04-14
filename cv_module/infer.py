@@ -1,3 +1,5 @@
+from PIL import Image, ImageDraw
+
 from cv_module.model_utils import load_model
 from pipeline.schema import BoundingBox, DetectedObject, SceneDetections
 
@@ -21,6 +23,13 @@ ALLOWED_LABELS = {
     "person",
     "traffic light",
     "traffic sign",
+}
+BOX_COLORS = {
+    "car": "#22c55e",
+    "truck": "#f97316",
+    "person": "#ef4444",
+    "traffic light": "#eab308",
+    "traffic sign": "#3b82f6",
 }
 
 
@@ -65,6 +74,35 @@ def get_relative_position(
         depth_position = "far"
 
     return f"{horizontal_position}-{depth_position}"
+
+
+def draw_detections_on_image(image: Image.Image, detections: SceneDetections) -> Image.Image:
+    # Dessine les bounding boxes et les labels sur une copie de l'image.
+    annotated_image = image.copy().convert("RGB")
+    draw = ImageDraw.Draw(annotated_image)
+
+    for detected_object in detections.detected_objects:
+        box = detected_object.bounding_box
+        x1 = box.x
+        y1 = box.y
+        x2 = box.x + box.width
+        y2 = box.y + box.height
+        color = BOX_COLORS.get(detected_object.label, "#ffffff")
+        label_text = f"{detected_object.label} {detected_object.confidence:.2f}"
+        text_y = max(0, y1 - 18)
+
+        draw.rectangle((x1, y1, x2, y2), outline=color, width=3)
+        text_box = draw.textbbox((x1, text_y), label_text)
+        text_background = (
+            text_box[0] - 4,
+            text_box[1] - 2,
+            text_box[2] + 4,
+            text_box[3] + 2,
+        )
+        draw.rectangle(text_background, fill=color)
+        draw.text((x1, text_y), label_text, fill="black")
+
+    return annotated_image
 
 
 def run_inference(image_path: str, confidence_threshold: float = CONFIDENCE_THRESHOLD) -> SceneDetections:

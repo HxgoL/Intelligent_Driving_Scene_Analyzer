@@ -79,7 +79,7 @@ class DrivingSceneAnalyzer:
    def analyze_scene(
        self,
        detections: SceneDetections,
-       scene_context: str = "Route générale, jour clair",
+       scene_context: str = "scene_context a definir",
        mock_llm_response: Optional[str] = None
    ) -> AnalyseResultat:
        """

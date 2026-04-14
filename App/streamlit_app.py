@@ -3,6 +3,7 @@ import streamlit as st
 from PIL import Image
 
 from pipeline.orchestrator import PipelineOrchestrator
+from cv_module.infer import draw_detections_on_image
 
 
 st.title("Hello World.")
@@ -28,6 +29,11 @@ if uploaded_file is not None:
     resultat = orchestrator.run_pipeline(uploaded_file)
 
     st.write("Pipeline execute avec succes")
+
+    image_annotee = draw_detections_on_image(image, resultat.scene_detections)
+    st.subheader("Image avec bounding boxes")
+    st.image(image_annotee, caption="Detections YOLO", use_column_width=True)
+
 
     # Afficher les résultats de l'analyse (mock pour l'instant)
     st.subheader("Résumé de la scène")

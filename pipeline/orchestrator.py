@@ -3,6 +3,7 @@ from PIL import Image
 from pipeline.schema import PipelineOutput, RisqueEvaluation, AnalyseResultat
 from pipeline.preprocess import preprocess_image
 from cv_module.infer import run_inference
+from llm_agent.agent import DrivingSceneAnalyzer
 
 # Test a enlever apres
 from pipeline.schema import SceneDetections, DetectedObject, BoundingBox
@@ -23,22 +24,24 @@ class PipelineOrchestrator:
     """
 
     def __init__(self):
-        pass
+        self.analyzer = DrivingSceneAnalyzer()
 
     def run_pipeline(self, uploaded_image) -> PipelineOutput:
         #1) image recue de l'interface
         image = Image.open(uploaded_image)
 
-        #2) pretraitement de l'image preprocess.py
+        #2) pretraitement de l'image preprocess.py (par exemple le format)
         image_traitée = preprocess_image(image)
 
         #3) détection de la scene avec cv_module/infer.py 
         scene_detection = run_inference(image_traitée)
 
+
+
         #4) adaptation format sortie agent LLM avec adapters.py (mock)
         # agent_input = adapt_detections_for_llm(scene_detection) avec la classe adapers.py
-        # analyse_resultat = run_scene_analysis(agent_input) avec la classe agent.py
-        
+        analyse_resultat = self.analyzer.analyze_scene(scene_detection)
+        """ Version mock pour les tests
         risque = RisqueEvaluation(risque_level="Moyen")
 
         analyse_resultat = AnalyseResultat(
@@ -50,7 +53,7 @@ class PipelineOrchestrator:
             ],
             risque_eval=risque
         )
-
+        """
 
         #7) rapport final
         pipeline_output = PipelineOutput(

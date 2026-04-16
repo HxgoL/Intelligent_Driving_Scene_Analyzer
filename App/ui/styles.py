@@ -9,6 +9,14 @@ def apply_styles() -> None:
     st.markdown(
         """
         <style>
+        :root {
+            --app-accent: #1f4e79;
+            --app-accent-soft: rgba(31, 78, 121, 0.12);
+            --app-border: rgba(128, 128, 128, 0.22);
+            --app-surface: color-mix(in srgb, var(--secondary-background-color) 82%, transparent);
+            --app-surface-strong: color-mix(in srgb, var(--background-color) 76%, var(--app-accent) 24%);
+        }
+
         .block-container {
             padding-top: 1.6rem;
             padding-bottom: 2.2rem;
@@ -16,25 +24,25 @@ def apply_styles() -> None:
         }
 
         h1, h2, h3 {
-            color: #1f4e79;
+            color: var(--text-color);
         }
 
         [data-testid="stImage"] img {
+            display: block;
+            max-width: 100%;
             border-radius: 14px;
-            width: 100%;
-            height: auto;
-            object-fit: contain;
-            border: 1px solid rgba(31, 78, 121, 0.12);
+            border: 1px solid var(--app-accent-soft);
             box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
         }
 
         .report-card {
             padding: 1.2rem 1.25rem;
             border-radius: 18px;
-            background: linear-gradient(135deg, #f6fbff 0%, #eef6ff 100%);
-            border: 1px solid rgba(31, 78, 121, 0.12);
+            background: var(--app-surface-strong);
+            border: 1px solid var(--app-accent-soft);
             box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
             margin-bottom: 1rem;
+            color: var(--text-color);
         }
 
         .report-card__header {
@@ -50,12 +58,13 @@ def apply_styles() -> None:
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.08em;
-            color: #4b5563;
+            color: var(--text-color);
+            opacity: 0.75;
         }
 
         .report-card__summary {
             margin: 0;
-            color: #0f172a;
+            color: var(--text-color);
             font-size: 1rem;
             line-height: 1.65;
         }
@@ -66,8 +75,8 @@ def apply_styles() -> None:
             justify-content: center;
             padding: 0.4rem 0.8rem;
             border-radius: 999px;
-            background: #1f4e79;
-            color: white;
+            background: var(--app-accent);
+            color: #ffffff;
             font-size: 0.9rem;
             font-weight: 700;
             white-space: nowrap;
@@ -80,12 +89,13 @@ def apply_styles() -> None:
             padding: 0.65rem 0.8rem;
             margin-bottom: 0.55rem;
             border-radius: 12px;
-            background: #fafcff;
-            border: 1px solid rgba(31, 78, 121, 0.1);
+            background: var(--app-surface);
+            border: 1px solid var(--app-accent-soft);
+            color: var(--text-color);
         }
 
         .recommendation-bullet {
-            color: #1f4e79;
+            color: var(--app-accent);
             font-weight: 700;
         }
 
@@ -96,16 +106,23 @@ def apply_styles() -> None:
             padding: 0.7rem 0.85rem;
             margin-bottom: 0.45rem;
             border-radius: 12px;
-            background: #ffffff;
-            border: 1px solid rgba(15, 23, 42, 0.08);
+            background: var(--app-surface);
+            border: 1px solid var(--app-border);
+            color: var(--text-color);
         }
 
         [data-testid="stMetric"] {
-            background: #ffffff;
-            border: 1px solid rgba(15, 23, 42, 0.08);
+            background: var(--app-surface);
+            border: 1px solid var(--app-border);
             border-radius: 16px;
             padding: 0.6rem;
             box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
+        }
+
+        [data-testid="stMetricLabel"],
+        [data-testid="stMetricValue"],
+        [data-testid="stCaptionContainer"] {
+            color: var(--text-color);
         }
         </style>
         """,

@@ -16,6 +16,5 @@ def render_uploader() -> tuple[BinaryIO | None, Image.Image | None]:
 
     image = Image.open(uploaded_file)
     st.success("Fichier uploade avec succes.")
-    st.image(image, caption="Image uploadee", use_container_width=True)
 
     return uploaded_file, image

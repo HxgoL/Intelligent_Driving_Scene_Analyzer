@@ -2,7 +2,16 @@
 Point d'entree de l'application Streamlit.
 """
 
+import sys
+from pathlib import Path
+
 import streamlit as st
+
+# Garantit que la racine du projet est dans le PYTHONPATH quand Streamlit
+# exécute ce fichier ou une page séparément.
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
 
 from App.services.analysis_session_service import AnalysisSessionService
 from App.services.pipeline_runner import run_analysis

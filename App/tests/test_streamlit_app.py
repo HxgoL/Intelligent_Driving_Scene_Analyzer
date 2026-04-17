@@ -108,7 +108,7 @@ def test_main_shows_info_when_no_file_uploaded(monkeypatch):
 
     streamlit_app.main()
 
-    assert calls["info"] == "Veuillez uploader une image JPG"
+    assert calls["info"] == "Veuillez uploader une image JPG."
     assert calls["run_analysis_called"] is False
     assert calls["render_results_called"] is False
 

@@ -36,13 +36,14 @@ def apply_styles() -> None:
         }
 
         .report-card {
-            padding: 1.2rem 1.25rem;
+            padding: 1.5rem 1.6rem;
             border-radius: 18px;
             background: var(--app-surface-strong);
             border: 1px solid var(--app-accent-soft);
             box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
             margin-bottom: 1rem;
             color: var(--text-color);
+            min-height: 220px;
         }
 
         .report-card__header {
@@ -50,7 +51,7 @@ def apply_styles() -> None:
             justify-content: space-between;
             align-items: center;
             gap: 1rem;
-            margin-bottom: 0.75rem;
+            margin-bottom: 1rem;
         }
 
         .report-card__eyebrow {
@@ -65,8 +66,9 @@ def apply_styles() -> None:
         .report-card__summary {
             margin: 0;
             color: var(--text-color);
-            font-size: 1rem;
-            line-height: 1.65;
+            font-size: 1.08rem;
+            line-height: 1.9;
+            white-space: pre-wrap;
         }
 
         .risk-badge {

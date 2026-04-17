@@ -1,47 +1,42 @@
+"""
+Point d'entree de l'application Streamlit.
+"""
+
 import streamlit as st
 
-from PIL import Image
-
-from pipeline.orchestrator import PipelineOrchestrator
-from cv_module.infer import draw_detections_on_image
-
-
-st.title("Hello World.")
-
-#Drag and drop
-uploaded_file = st.file_uploader("Choisir une image (JPG)", type=["jpg"])
-
-#Resultats
-
-st.subheader("Résultats de l'analyse de la scène de conduite intelligente")
-
-if uploaded_file is not None:
-    st.success("File uploaded successfully!")
-
-    #afficher imazge uploader
-    image = Image.open(uploaded_file)
-    st.image(image, caption='Image uploadée', use_column_width=True)
-
-    #remetre le curseur au debut de l'image pour la suite du pipeline
-    uploaded_file.seek(0)
-
-    orchestrator = PipelineOrchestrator()
-    resultat = orchestrator.run_pipeline(uploaded_file)
-
-    st.write("Pipeline execute avec succes")
-
-    image_annotee = draw_detections_on_image(image, resultat.scene_detections)
-    st.subheader("Image avec bounding boxes")
-    st.image(image_annotee, caption="Detections YOLO", use_column_width=True)
+from App.services.analysis_session_service import AnalysisSessionService
+from App.services.pipeline_runner import run_analysis
+from App.ui.page import configure_page, render_header
+from App.ui.results import render_results
+from App.ui.styles import apply_styles
+from App.ui.upload import render_uploader
 
 
-    # Afficher les résultats de l'analyse (mock pour l'instant)
-    st.subheader("Résumé de la scène")
-    st.write("Niveau de risque :", resultat.analyse_resultat.risque_eval.risque_level)
-    st.write("Résumé :", resultat.analyse_resultat.resume)
-    st.write("Recommandations :")
-    for reco in resultat.analyse_resultat.recommandations:
-        st.write("-", reco)
+def main() -> None:
+    session_service = AnalysisSessionService()
 
-else:
+    configure_page()
+    apply_styles()
+    st.sidebar.markdown("## Navigation")
+    st.sidebar.caption("Utilisez le menu natif Streamlit pour changer de page.")
+    render_header()
+    session_service.initialize()
+
+    uploaded_file, image = render_uploader()
+
+    if uploaded_file is not None and image is not None:
+        if session_service.has_new_upload(uploaded_file):
+            result = run_analysis(uploaded_file)
+            session_service.store_analysis(uploaded_file, image, result)
+
+    stored_analysis = session_service.get_stored_analysis()
+
+    if stored_analysis.image is not None and stored_analysis.result is not None:
+        render_results(stored_analysis.image, stored_analysis.result)
+        return
+
     st.info("Veuillez uploader une image JPG.")
+
+
+if __name__ == "__main__":
+    main()

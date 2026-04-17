@@ -2,6 +2,8 @@
 Composants du rapport textuel.
 """
 
+from html import escape
+
 import streamlit as st
 
 from pipeline.schema import PipelineOutput
@@ -9,8 +11,8 @@ from pipeline.schema import PipelineOutput
 
 def render_report(result: PipelineOutput) -> None:
     risk_level = result.analyse_resultat.risque_eval.risque_level
-    summary = result.analyse_resultat.resume
-    recommendations = result.analyse_resultat.recommandations
+    summary = escape(result.analyse_resultat.resume).replace("\n", "<br>")
+    recommendations = [escape(recommendation) for recommendation in result.analyse_resultat.recommandations]
 
     st.markdown("### Rapport d'analyse")
     st.markdown(
@@ -20,7 +22,7 @@ def render_report(result: PipelineOutput) -> None:
                 <span class="report-card__eyebrow">Analyse de scene</span>
                 <span class="risk-badge">{risk_level}</span>
             </div>
-            <p class="report-card__summary">{summary}</p>
+            <div class="report-card__summary">{summary}</div>
         </div>
         """,
         unsafe_allow_html=True,

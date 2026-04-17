@@ -43,13 +43,15 @@ def apply_styles() -> None:
             box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
             margin-bottom: 1rem;
             color: var(--text-color);
-            min-height: 220px;
+            height: auto;
+            overflow: visible;
         }
 
         .report-card__header {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
             gap: 1rem;
             margin-bottom: 1rem;
         }
@@ -69,6 +71,8 @@ def apply_styles() -> None:
             font-size: 1.08rem;
             line-height: 1.9;
             white-space: pre-wrap;
+            overflow-wrap: anywhere;
+            word-break: break-word;
         }
 
         .risk-badge {

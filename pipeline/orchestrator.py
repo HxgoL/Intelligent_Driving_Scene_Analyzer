@@ -1,4 +1,7 @@
+import os
+
 from PIL import Image
+from dotenv import load_dotenv
 
 from pipeline.schema import PipelineOutput, RisqueEvaluation, AnalyseResultat
 from pipeline.preprocess import preprocess_image
@@ -24,7 +27,12 @@ class PipelineOrchestrator:
     """
 
     def __init__(self):
-        self.analyzer = DrivingSceneAnalyzer()
+        load_dotenv()
+        api_key = os.getenv("OPENAI_API_KEY") or os.getenv("OPEN_API_KEY")
+        self.analyzer = DrivingSceneAnalyzer(
+            use_llm=bool(api_key),
+            api_key=api_key,
+        )
 
     def run_pipeline(self, uploaded_image) -> PipelineOutput:
         #1) image recue de l'interface
@@ -62,4 +70,3 @@ class PipelineOrchestrator:
         )
 
         return pipeline_output
-

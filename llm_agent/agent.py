@@ -34,6 +34,11 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
+def _resolve_openai_api_key(explicit_api_key: Optional[str] = None) -> Optional[str]:
+   """Retourne la clé API depuis le paramètre explicite ou l'environnement."""
+   return explicit_api_key or os.getenv("OPENAI_API_KEY") or os.getenv("OPEN_API_KEY")
+
+
 #Classe principale de l'agent d'analyse de scènes routières
 class DrivingSceneAnalyzer: 
    """
@@ -66,11 +71,11 @@ class DrivingSceneAnalyzer:
                )
            
            # Récupère la clé API
-           api_key = api_key or os.getenv("OPENAI_API_KEY")
+           api_key = _resolve_openai_api_key(api_key)
            if not api_key:
                raise ValueError(
                    "Clé API OpenAI non trouvée. "
-                   "Configurez OPENAI_API_KEY en variable d'environnement ou passez-la en paramètre."
+                   "Configurez OPENAI_API_KEY (ou OPEN_API_KEY) en variable d'environnement ou passez-la en paramètre."
                )
            
            self.client = OpenAI(api_key=api_key)
